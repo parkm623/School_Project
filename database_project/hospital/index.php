@@ -10,7 +10,8 @@
 <?php
   include "connecttodb.php";
  ?>
- <h1>Hosptal Database </h1>
+ <h1 class="text-center">Hospital Database </h1>
+ <br><br><hr>
 
  <body>
 <div class="container">
@@ -119,22 +120,25 @@
                                                 $query = "SELECT * FROM doctor ORDER BY birthdate DESC;";}
                                                            }
                                                 }
-							$result = mysqli_query($connection,$query);
+							}
+							if(isset($query)){
+								$result = mysqli_query($connection,$query);
 							 if (!$result) {
 							  die("databases query failed.");
 							 }
 							 while ($row = mysqli_fetch_assoc($result)) {
 							 echo "<tr>";
-							 echo "<td>" . $row["licensenum"] . "</td>";
-							 echo "<td>" . $row["firstname"] . "</td>";
-							 echo "<td>" . $row["lastname"] . "</td>";
-							 echo "<td>" . $row["licensedate"] . "</td>";
-							 echo "<td>" . $row["birthdate"] . "</td>";
-							 echo "<td>" . $row["hosworksat"] . "</td>";
-							 echo "<td>" . $row["speciality"] . "</td>";
+							 echo "<td>" . (isset($row["licensenum"]) ? $row["licensenum"] : "") . "</td>";
+							 echo "<td>" . (isset($row["firstname"]) ? $row["firstname"] : "") . "</td>";
+							 echo "<td>" . (isset($row["lastname"]) ? $row["lastname"] : "") . "</td>";
+							 echo "<td>" . (isset($row["licensedate"]) ? $row["licensedate"] : "") . "</td>";
+							 echo "<td>" . (isset($row["birthdate"]) ? $row["birthdate"] : "") . "</td>";
+							 echo "<td>" . (isset($row["hosworksat"]) ? $row["hosworksat"] : "") . "</td>";
+							 echo "<td>" . (isset($row["speciality"]) ? $row["speciality"] : "") . "</td>";
 							 echo "</tr>";	
 							 }
 							  mysqli_free_result($result);
+							}
 						?>
 					
 					
@@ -174,12 +178,12 @@
                     <h5>License Information</h5>
                     <div class="col-3 mt-2">
                         <div class="input-group flex-nowrap">
-                             <input type="text" class="form-control" placeholder="License Number" aria-label="License Number" name="License Number">
+                             <input type="text" class="form-control" placeholder="License Number" aria-label="License Number" name="LicenseNumber">
                         </div>
                     </div>
                     <div class="col-3 mt-2">
                         <div class="input-group flex-nowrap">
-                             <input type="date" class="form-control" placeholder="License Date" aria-label="License Date" name="License Date">
+                             <input type="date" class="form-control" placeholder="License Date" aria-label="License Date" name="LicenseDate">
                         </div>
                     </div>
                 </div>
@@ -211,13 +215,13 @@
             </div>
         </form>
 		<?php
-                $licensenum =  $_POST['LicenseNumber'];
-                $firstname = $_POST['Firstname'];
-                $lastname =  $_POST['Lastname'];
-                $licensedate = $_POST['LicenseDate'];
-                $birthdate = $_POST['Birthdate'];
-                $hosworksat = $_POST['hoscode'];
-                $speciality = $_POST['Specialty'];
+                $licensenum =  isset($_POST['LicenseNumber']) ? $_POST['LicenseNumber'] : '';
+                $firstname = isset($_POST['Firstname']) ? $_POST['Firstname'] : '';
+                $lastname =  isset($_POST['Lastname']) ? $_POST['Lastname'] : '';
+                $licensedate = isset($_POST['LicenseDate']) ? $_POST['LicenseDate'] : '';
+                $birthdate = isset($_POST['Birthdate']) ? $_POST['Birthdate'] : '';
+                $hosworksat = isset($_POST['hoscode']) ? $_POST['hoscode'] : '';
+                $speciality = isset($_POST['Specialty']) ? $_POST['Specialty'] : '';
                         if(isset($_POST['insert'])){
                                 $test = "SELECT * FROM doctor WHERE licensenum = '$licensenum';";
                                 $testResult = mysqli_query($connection,$test);
@@ -259,6 +263,7 @@
 						<th>Remove</th>
                     </tr>
                     <tr>
+						<?php
 						$query = "SELECT * FROM doctor;";
 						$result = mysqli_query($connection,$query);
 							 if (!$result) {
@@ -274,10 +279,11 @@
 							 echo "<td>" . $row["hosworksat"] . "</td>";
 							 echo "<td>" . $row["speciality"] . "</td>";
 							 $licensenum =  $row["licensenum"];
-							 echo "<td><input class="form-check-input" type="radio" name="radioRemove" value='licensenum' /></td>";
+							 echo "<td><input class=\"form-check-input\" type=\"radio\" name=\"radioRemove\" value=\"$licensenum\" /></td>";
 							 echo "</tr>";	
 							 }
 							  mysqli_free_result($result);
+						?>
 					</tr>
 			</table>
 			<div class="col">
@@ -287,7 +293,7 @@
 				if(isset($_POST['remove'])){
                 	if(isset($_POST["radioRemove"])){
 						$licensenum =  $_POST["radioRemove"];
-						$query = "DELETE FROM doctor WHERE licensenum = "$licensenum";";
+						$query = "DELETE FROM doctor WHERE licensenum = '$licensenum';";
                         $result = mysqli_query($connection,$query);
                         if (!$result) {
                         	die("databases query failed.");}
@@ -316,7 +322,7 @@
                                                     die("databases query failed.");
                                                    }
                                                    while ($row = mysqli_fetch_assoc($result)) {
-                                                   echo "<option >";
+                                                   echo "<option value=\"" . $row["licensenum"] . "\">";
                                                    echo $row["firstname"] . " " . $row["lastname"];
                                                    echo "</option>";
                                                    }
@@ -328,13 +334,13 @@
                         <select class="form-select" name="patient" aria-label="patient">
                         <option value="">Select Patient</option>
                                                 <?php
-                                                   $query = "SELECT firstname, lastname FROM patient;";
+                                                   $query = "SELECT firstname, lastname, ohipnum FROM patient;";
                                                    $result = mysqli_query($connection,$query);
                                                    if (!$result) {
                                                     die("databases query failed.");
                                                    }
                                                    while ($row = mysqli_fetch_assoc($result)) {
-                                                   echo "<option value="$row["licensennum"]">";
+                                                   echo "<option value=\"" . $row["ohipnum"] . "\">";
                                                    echo $row["firstname"] . " " . $row["lastname"];
                                                    echo "</option>";
                                                    }
@@ -343,22 +349,22 @@
                                                 </select>
                     </div>
                     <div class="col">
-                    <button type="btnAssign" class="btn btn-success btn-lg" name="assign" value ="assign">Assign</button>
+                    <button type="btnAssign" class="btn btn-success btn-lg" name="assign" value="assign">Assign</button>
             		</div>
 			</form>
 			<?php
 				if(isset($_POST['assign'])){
-                	if(isset($_POST["doctor"]) && isset($_POST["patient'])){
+                	if(isset($_POST["doctor"]) && isset($_POST["patient"])){
 								$licensenum =  $_POST["doctor"];
 								$ohipnum = $_POST["patient"];
 								$test = "SELECT * FROM looksafter WHERE licensenum = '$licensenum' AND ohipnum = '$ohipnum';";
                                 $testResult = mysqli_query($connection,$test);
                                 $row = mysqli_fetch_array($testResult);
                                 if ($row != NULL){
-                                        echo '<script>alert("Patient already assigned to this doctor".")</script>';
+                                        echo '<script>alert("Patient already assigned to this doctor.")</script>';
                                 }
                                 else {
-									$query = "INSERT INTO looksafter VALUES ('$licensenum','$ohipnum')";";
+									$query = "INSERT INTO looksafter VALUES ('$licensenum','$ohipnum')";
 			                        $result = mysqli_query($connection,$query);
 			                        if (!$result) {
 			                        	die("databases query failed.");}
@@ -388,7 +394,7 @@
                                                    }
                                                    while ($row = mysqli_fetch_assoc($result)){
                                                    $licensenum =  $row["licensenum"];
-                                                   echo "<option value='$licensenum'>";
+                                                   echo "<option value=\"$licensenum\">";
                                                    echo $row["firstname"] . " " . $row["lastname"];
                                                    echo "</option>";
                                                    }
@@ -447,7 +453,7 @@
                                                    }
                                                    while ($row = mysqli_fetch_assoc($result)) {
                                                    $hoscode =  $row["hoscode"];
-                                                   echo "<option value='$hoscode'>";
+                                                   echo "<option value=\"$hoscode\">";
                                                    echo $row["hosname"];
                                                    echo "</option>";
                                                    }
@@ -471,14 +477,14 @@
                     <tr>					
 					<?php
 					if(isset($_POST['btnHospital'])){
-								$query = "SELECT h.hosname, h.city, h.prov, h.numofbed, d.firstname, d.lastname from hospital h JOIN d ON d.licens.lim = h.headdoc;";
+								$query = "SELECT h.hosname, h.city, h.prov, h.numofbed, d.firstname, d.lastname from hospital h JOIN doctor d ON d.licensenum = h.headdoc;";
 								$result = mysqli_query($connection,$query);
 									 if (!$result) {
 									  die("databases query failed.");
 									 }
 									 while ($row = mysqli_fetch_assoc($result)) {
 									 echo "<tr>";
-									 echo "<td>" . $row["hosname"]</td>";
+									 echo "<td>" . $row["hosname"] . "</td>";
 									 echo "<td>" . $row["city"] . "</td>";
 									 echo "<td>" . $row["prov"] . "</td>";
 									 echo "<td>" . $row["numofbed"] . "</td>";
@@ -499,7 +505,7 @@
                     <tr>					
 					<?php
 					if(isset($_POST['btnHospital'])){
-								$hoscode =  $_POST["hospotal"];
+								$hoscode =  isset($_POST["hospital"]) ? $_POST["hospital"] : '';
 								$query = "SELECT firstname, lastname FROM doctor WHERE hosworksat = '$hoscode';";
 								$result = mysqli_query($connection,$query);
 									 if (!$result) {
@@ -507,7 +513,7 @@
 									 }
 									 while ($row = mysqli_fetch_assoc($result)) {
 									 echo "<tr>";
-									 echo "<td>" . $row["firstname"]</td>";
+									 echo "<td>" . $row["firstname"] . "</td>";
 									 echo "<td>" . $row["lastname"] . "</td>";
 									 echo "</tr>";	
 									 }
@@ -535,7 +541,7 @@
                                                    }
                                                    while ($row = mysqli_fetch_assoc($result)) {
                                                    $hoscode =  $row["hoscode"];
-                                                   echo "<option value='$hoscode'>";
+                                                   echo "<option value=\"$hoscode\">";
                                                    echo $row["hosname"];
                                                    echo "</option>";
                                                    }
@@ -555,8 +561,8 @@
 		</form>
 		<?php
 			if(isset($_POST['btnBeds'])){
-                	if(isset($_POST["hospital"])) && (!empty($_POST["numofbeds'])){
-						$hoscode =  $_POST["hospotal"];
+                	if(isset($_POST["hospital"]) && (!empty($_POST["numofbeds"]))){
+						$hoscode =  $_POST["hospital"];
 						$numofbeds = $_POST["numofbeds"];
 						$query = "UPDATE hospital SET numofbed = '$numofbeds' WHERE hoscode = '$hoscode';";
                         $result = mysqli_query($connection,$query);

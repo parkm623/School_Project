@@ -6,8 +6,8 @@
  }
  while ($row = mysqli_fetch_assoc($result)) {
  echo "<option>";
- echo "Id: " .$row["licensenum"]." Firstname: ".$row["firstname"]." Lastname: ".$row["l$
- " Licensedate: ".$row["licensedate"]." Birthdate: " .$row["birthdate"]." Hosworksat: "$
+ echo "Id: " .$row["licensenum"]." Firstname: ".$row["firstname"]." Lastname: ".$row["lastname"].
+ " Licensedate: ".$row["licensedate"]." Birthdate: " .$row["birthdate"]." Hosworksat: " .$row["hosworksat"].
  " Speciality: ".$row["speciality"] ;
  echo "</option>";
  }
